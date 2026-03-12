@@ -542,25 +542,11 @@
 
 <!-- ═══ Config Panel ═══ -->
 <div class="config-panel">
-  <div class="config-group">
-    <label>Supabase URL</label>
-    <input id="cfgUrl" class="url-input" placeholder="https://xxx.supabase.co" />
+  <div class="status-indicator" style="margin-right:auto">
+    <div id="statusDot" class="status-dot"></div>
+    <span id="statusLabel">Loading config...</span>
   </div>
-  <div class="config-group">
-    <label>Service Key</label>
-    <input id="cfgKey" class="key-input" type="password" placeholder="sb_secret_..." />
-  </div>
-  <div class="config-group">
-    <label>Bucket</label>
-    <input id="cfgBucket" class="bucket-input" placeholder="eye-test-sessions" />
-  </div>
-  <div class="config-actions">
-    <button id="btnConnect" class="btn btn-primary">Connect</button>
-    <div class="status-indicator">
-      <div id="statusDot" class="status-dot"></div>
-      <span id="statusLabel">Disconnected</span>
-    </div>
-  </div>
+  <button id="btnConnect" class="btn btn-primary" style="display:none">Retry</button>
 </div>
 
 <!-- ═══ Main Content ═══ -->
@@ -614,16 +600,9 @@
 (function () {
   "use strict";
 
-  const LS_URL = "monitor_supa_url";
-  const LS_KEY = "monitor_supa_key";
-  const LS_BUCKET = "monitor_supa_bucket";
   const LS_THEME = "monitor_theme";
-  const DEFAULT_BUCKET = "eye-test-sessions";
 
   const $id = (id) => document.getElementById(id);
-  const $url = $id("cfgUrl");
-  const $key = $id("cfgKey");
-  const $bucket = $id("cfgBucket");
   const $btnConnect = $id("btnConnect");
   const $statusDot = $id("statusDot");
   const $statusLabel = $id("statusLabel");
@@ -726,37 +705,28 @@
   }
   function hideProgress() { $progressWrap.classList.remove("visible"); }
 
-  // ── LocalStorage ─────────────────────────────────────────
-  function loadConfig() {
-    $url.value = localStorage.getItem(LS_URL) || "";
-    $key.value = localStorage.getItem(LS_KEY) || "";
-    $bucket.value = localStorage.getItem(LS_BUCKET) || "";
-  }
-  function saveConfig() {
-    localStorage.setItem(LS_URL, $url.value.trim());
-    localStorage.setItem(LS_KEY, $key.value.trim());
-    localStorage.setItem(LS_BUCKET, $bucket.value.trim());
+  // ── Fetch config from server-side API ─────────────────────
+  async function fetchConfig() {
+    try {
+      const resp = await fetch("/api/config");
+      if (!resp.ok) throw new Error("Config API returned " + resp.status);
+      return await resp.json();
+    } catch (e) {
+      throw new Error("Could not load config: " + e.message);
+    }
   }
 
   // ── Connect ──────────────────────────────────────────────
   async function connect() {
-    const url = $url.value.trim();
-    const key = $key.value.trim();
-    const bucket = $bucket.value.trim() || DEFAULT_BUCKET;
-
-    if (!url || !key) {
-      showToast("Please enter Supabase URL and Service Key");
-      return;
-    }
-
-    saveConfig();
-    $btnConnect.disabled = true;
-    $btnConnect.textContent = "Connecting...";
+    $btnConnect.style.display = "none";
     setStatus("", "Connecting...");
 
     try {
-      supaClient = window.supabase.createClient(url, key);
-      storage = supaClient.storage.from(bucket);
+      const config = await fetchConfig();
+      if (config.error) throw new Error(config.error);
+
+      supaClient = window.supabase.createClient(config.url, config.key);
+      storage = supaClient.storage.from(config.bucket);
 
       const { data, error } = await storage.list("", { limit: 1 });
       if (error) throw new Error(error.message);
@@ -765,12 +735,10 @@
       showToast("Connected — loading session data...");
       await loadAllMetadata();
     } catch (e) {
-      setStatus("error", "Failed");
-      showToast("Connection failed: " + e.message);
+      setStatus("error", "Connection failed");
+      showToast(e.message);
+      $btnConnect.style.display = "inline-block";
       allMetadata = [];
-    } finally {
-      $btnConnect.disabled = false;
-      $btnConnect.textContent = "Connect";
     }
   }
 
@@ -986,11 +954,10 @@
   }
 
   // ── Init ─────────────────────────────────────────────────
-  loadConfig();
   $datePicker.value = todayUTC();
   $btnConnect.addEventListener("click", connect);
   $datePicker.addEventListener("change", renderForDate);
-  if ($url.value && $key.value) connect();
+  connect();
 })();
 </script>
 </body>
