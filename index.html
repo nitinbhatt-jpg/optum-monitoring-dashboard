@@ -276,6 +276,22 @@
       letter-spacing: .5px;
       color: var(--text-muted);
     }
+    .date-range-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .date-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .date-separator {
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 600;
+      padding-bottom: 8px;
+    }
     .date-card input[type="date"] {
       padding: 8px 12px;
       border: 1px solid var(--border);
@@ -555,12 +571,21 @@
   <!-- Stats Grid -->
   <div class="stats-grid">
     <div class="date-card">
-      <label>Select Date</label>
-      <input type="date" id="datePicker" />
+      <div class="date-range-row">
+        <div class="date-field">
+          <label>From</label>
+          <input type="date" id="dateFrom" />
+        </div>
+        <span class="date-separator">–</span>
+        <div class="date-field">
+          <label>To</label>
+          <input type="date" id="dateTo" />
+        </div>
+      </div>
     </div>
     <div class="stat-card">
       <div class="stat-value" id="sessionsToday">--</div>
-      <div class="stat-label">Eye Tests Today</div>
+      <div class="stat-label">Eye Tests (Range)</div>
     </div>
     <div class="stat-card">
       <div class="stat-value" id="sessionsAllTime">--</div>
@@ -568,7 +593,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-value" id="activeOptums">--</div>
-      <div class="stat-label">Active Optums Today</div>
+      <div class="stat-label">Active Optums (Range)</div>
     </div>
   </div>
 
@@ -606,7 +631,8 @@
   const $btnConnect = $id("btnConnect");
   const $statusDot = $id("statusDot");
   const $statusLabel = $id("statusLabel");
-  const $datePicker = $id("datePicker");
+  const $dateFrom = $id("dateFrom");
+  const $dateTo = $id("dateTo");
   const $sessionsToday = $id("sessionsToday");
   const $sessionsAllTime = $id("sessionsAllTime");
   const $activeOptums = $id("activeOptums");
@@ -811,11 +837,15 @@
 
   // ── Render ───────────────────────────────────────────────
   function renderForDate() {
-    const selectedDate = $datePicker.value;
-    if (!selectedDate) return;
+    const fromDate = $dateFrom.value;
+    const toDate = $dateTo.value;
+    if (!fromDate || !toDate) return;
     expandedOptum = null;
 
-    const todaySessions = allMetadata.filter((m) => getSessionDate(m) === selectedDate);
+    const todaySessions = allMetadata.filter((m) => {
+      const d = getSessionDate(m);
+      return d && d >= fromDate && d <= toDate;
+    });
 
     const allTimeByOptum = {};
     for (const m of allMetadata) {
@@ -954,9 +984,17 @@
   }
 
   // ── Init ─────────────────────────────────────────────────
-  $datePicker.value = todayUTC();
+  $dateFrom.value = todayUTC();
+  $dateTo.value = todayUTC();
   $btnConnect.addEventListener("click", connect);
-  $datePicker.addEventListener("change", renderForDate);
+  $dateFrom.addEventListener("change", () => {
+    if ($dateFrom.value > $dateTo.value) $dateTo.value = $dateFrom.value;
+    renderForDate();
+  });
+  $dateTo.addEventListener("change", () => {
+    if ($dateTo.value < $dateFrom.value) $dateFrom.value = $dateTo.value;
+    renderForDate();
+  });
   connect();
 })();
 </script>
