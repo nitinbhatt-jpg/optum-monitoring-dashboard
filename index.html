@@ -441,6 +441,20 @@
       color: var(--text-secondary);
       transition: background var(--transition);
     }
+    .session-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0;
+    }
+    .session-row .session-tag {
+      min-width: 180px;
+      margin: 0;
+    }
+    .session-row .btn-download {
+      padding: 3px 10px;
+      font-size: 11px;
+    }
 
     /* ── Detail Row ─────────────────────────────────────────── */
     .detail-row td {
@@ -526,6 +540,132 @@
     }
     .chevron.open { transform: rotate(180deg); }
 
+    /* ── Nav Tabs ──────────────────────────────────────────── */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      border: 1px solid var(--border);
+    }
+    .nav-tab {
+      padding: 6px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(99,102,241,.3);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Cross Check Page ─────────────────────────────────── */
+    .cc-controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .cc-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cc-field label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-muted);
+    }
+    .cc-select {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border var(--transition);
+      min-width: 240px;
+      cursor: pointer;
+    }
+    .cc-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+    .cc-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .cc-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .cc-summary-card .val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary-text);
+    }
+    .cc-summary-card .lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .cc-eye-section {
+      margin-bottom: 24px;
+    }
+    .cc-eye-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cc-eye-title::before {
+      content: "";
+      width: 4px; height: 18px;
+      border-radius: 2px;
+    }
+    .cc-eye-title.right::before { background: var(--primary); }
+    .cc-eye-title.left::before { background: var(--green); }
+
+    .cc-table th { text-align: center; }
+    .cc-table td { text-align: center; font-variant-numeric: tabular-nums; }
+    .cc-table td.optum-name-cell { text-align: left; font-weight: 600; }
+    .cc-table tr.cc-deviation-row td {
+      font-weight: 700;
+      background: var(--primary-glow);
+      color: var(--primary-text);
+    }
+    .cc-table .deviation-ok { color: var(--green); }
+    .cc-table .deviation-warn { color: var(--yellow); }
+    .cc-table .deviation-bad { color: var(--red); }
+
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .navbar { padding: 12px 16px; }
@@ -552,6 +692,10 @@
       <div class="navbar-subtitle">Eye Test Dashboard</div>
     </div>
   </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+    <button class="nav-tab" data-tab="crosscheck">Cross Check</button>
+  </div>
   <span class="theme-toggle-label">Theme</span>
   <button class="theme-toggle" id="themeToggle" title="Toggle theme"></button>
 </nav>
@@ -566,56 +710,76 @@
 </div>
 
 <!-- ═══ Main Content ═══ -->
-<div class="container">
 
-  <!-- Stats Grid -->
-  <div class="stats-grid">
-    <div class="date-card">
-      <div class="date-range-row">
-        <div class="date-field">
-          <label>From</label>
-          <input type="date" id="dateFrom" />
+<!-- ── Dashboard Tab ── -->
+<div class="tab-content active" id="tabDashboard">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="date-card">
+        <div class="date-range-row">
+          <div class="date-field">
+            <label>From</label>
+            <input type="date" id="dateFrom" />
+          </div>
+          <span class="date-separator">–</span>
+          <div class="date-field">
+            <label>To</label>
+            <input type="date" id="dateTo" />
+          </div>
         </div>
-        <span class="date-separator">–</span>
-        <div class="date-field">
-          <label>To</label>
-          <input type="date" id="dateTo" />
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="sessionsToday">--</div>
+        <div class="stat-label">Eye Tests (Range)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="sessionsAllTime">--</div>
+        <div class="stat-label">Total Eye Tests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeOptums">--</div>
+        <div class="stat-label">Active Optums (Range)</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">Loading metadata...</div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-card-header">Optum Overview</div>
+      <div id="tableWrap">
+        <div class="empty-state">
+          <div class="icon">📡</div>
+          <p>Connect to Supabase to load session data.</p>
         </div>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-value" id="sessionsToday">--</div>
-      <div class="stat-label">Eye Tests (Range)</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="sessionsAllTime">--</div>
-      <div class="stat-label">Total Eye Tests</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="activeOptums">--</div>
-      <div class="stat-label">Active Optums (Range)</div>
-    </div>
   </div>
+</div>
 
-  <!-- Progress -->
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-bar-outer">
-      <div class="progress-bar-inner" id="progressBar"></div>
+<!-- ── Cross Check Tab ── -->
+<div class="tab-content" id="tabCrosscheck">
+  <div class="container">
+    <div class="cc-controls">
+      <div class="cc-field">
+        <label>Patient Name</label>
+        <select class="cc-select" id="ccPatientSelect">
+          <option value="">-- Select a patient --</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="ccCompareBtn" disabled>Compare</button>
     </div>
-    <div class="progress-text" id="progressText">Loading metadata...</div>
-  </div>
-
-  <!-- Table -->
-  <div class="table-card">
-    <div class="table-card-header">Optum Overview</div>
-    <div id="tableWrap">
+    <div id="ccResultWrap">
       <div class="empty-state">
-        <div class="icon">📡</div>
-        <p>Connect to Supabase to load session data.</p>
+        <div class="icon">🔍</div>
+        <p>Select a patient to compare final eye power across optums.</p>
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- Toast -->
@@ -882,7 +1046,7 @@
       '<th>Phoropter ID(s)</th>' +
       '<th>Eye Tests Today</th>' +
       '<th>Total Eye Tests</th>' +
-      '<th>Session IDs</th>' +
+      '<th>Sessions</th>' +
       '</tr></thead><tbody>';
 
     for (const optumName of allOptumNames) {
@@ -897,8 +1061,12 @@
 
       const isExpanded = expandedOptum === optumName;
 
-      const sessionTags = todayList.map((s) =>
-        '<span class="session-tag">' + esc(s.session_id || "--") + '</span>'
+      const sessionRows = todayList.map((s) =>
+        '<div class="session-row">' +
+          '<span class="session-tag">' + esc(s.session_id || "--") + '</span>' +
+          '<button class="btn-download btn-dl-csv" data-session="' + esc(s.session_id || "") + '">CSV</button>' +
+          '<button class="btn-download btn-dl-meta" data-session="' + esc(s.session_id || "") + '">JSON</button>' +
+        '</div>'
       ).join("") || '<span style="color:var(--text-muted)">--</span>';
 
       html += '<tr class="optum-row" data-optum="' + esc(optumName) + '">' +
@@ -907,7 +1075,7 @@
         '<td style="color:var(--text-secondary)">' + esc(phoroptersStr) + '</td>' +
         '<td>' + (todayCount > 0 ? '<span class="badge badge-primary">' + todayCount + '</span>' : '<span style="color:var(--text-muted)">0</span>') + '</td>' +
         '<td><strong>' + allTimeCount + '</strong></td>' +
-        '<td style="max-width:320px">' + sessionTags + '</td>' +
+        '<td>' + sessionRows + '</td>' +
         '</tr>';
 
       if (isExpanded && hasToday) html += buildDetailRow(todayList);
@@ -924,10 +1092,16 @@
         renderForDate();
       });
     });
-    $tableWrap.querySelectorAll(".btn-download").forEach((btn) => {
+    $tableWrap.querySelectorAll(".btn-dl-csv").forEach((btn) => {
       btn.addEventListener("click", function (e) {
         e.stopPropagation();
-        downloadCSV(this.dataset.session);
+        downloadFile(this.dataset.session + ".csv", this.dataset.session + ".csv", "text/csv");
+      });
+    });
+    $tableWrap.querySelectorAll(".btn-dl-meta").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        downloadFile(this.dataset.session + "_metadata.json", this.dataset.session + "_metadata.json", "application/json");
       });
     });
   }
@@ -936,7 +1110,7 @@
     let html = '<tr class="detail-row"><td colspan="6"><div class="detail-content">' +
       '<table><thead><tr>' +
       '<th>Session ID</th><th>Phoropter</th><th>Start Time</th>' +
-      '<th>Duration</th><th>Status</th><th>Phases Skipped</th><th>CSV</th>' +
+      '<th>Duration</th><th>Status</th><th>Phases Skipped</th><th>Downloads</th>' +
       '</tr></thead><tbody>';
 
     const sorted = [...sessions].sort((a, b) => (a.session_start_time || "") < (b.session_start_time || "") ? -1 : 1);
@@ -953,34 +1127,204 @@
         '<td>' + formatDuration(s.session_duration_seconds) + '</td>' +
         '<td><span class="badge ' + badge + '">' + esc(status) + '</span></td>' +
         '<td style="font-size:12px">' + esc(skipped.length > 0 ? skipped.join(", ") : "None") + '</td>' +
-        '<td><button class="btn-download" data-session="' + esc(s.session_id || "") + '">Download</button></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="btn-download btn-dl-csv" data-session="' + esc(s.session_id || "") + '">CSV</button> ' +
+          '<button class="btn-download btn-dl-meta" data-session="' + esc(s.session_id || "") + '">Metadata</button>' +
+        '</td>' +
         '</tr>';
     }
     html += '</tbody></table></div></td></tr>';
     return html;
   }
 
-  // ── CSV Download ─────────────────────────────────────────
-  async function downloadCSV(sessionId) {
-    if (!storage || !sessionId) return;
-    showToast("Downloading CSV...");
+  // ── File Download ────────────────────────────────────────
+  async function downloadFile(remoteName, localName, mimeType) {
+    if (!storage || !remoteName) return;
+    showToast("Downloading " + localName + "...");
     try {
-      const { data, error } = await storage.download(sessionId + ".csv");
+      const { data, error } = await storage.download(remoteName);
       if (error) throw new Error(error.message);
       const text = await data.text();
-      const blob = new Blob([text], { type: "text/csv" });
+      const blob = new Blob([text], { type: mimeType });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = sessionId + ".csv";
+      a.download = localName;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      showToast("CSV downloaded");
+      showToast(localName + " downloaded");
     } catch (e) {
       showToast("Download failed: " + e.message);
     }
+  }
+
+  // ── Tab Switching ────────────────────────────────────────
+  const $navTabs = document.querySelectorAll(".nav-tab");
+  const $tabContents = document.querySelectorAll(".tab-content");
+
+  function switchTab(tabId) {
+    $navTabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === tabId));
+    $tabContents.forEach((c) => c.classList.toggle("active", c.id === "tab" + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
+    if (tabId === "crosscheck") populatePatientDropdown();
+  }
+  $navTabs.forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+  // ── Cross Check ─────────────────────────────────────────
+  const $ccPatientSelect = $id("ccPatientSelect");
+  const $ccCompareBtn = $id("ccCompareBtn");
+  const $ccResultWrap = $id("ccResultWrap");
+
+  function populatePatientDropdown() {
+    const names = [...new Set(allMetadata.map((m) => m.customer_name).filter(Boolean))].sort();
+    const current = $ccPatientSelect.value;
+    $ccPatientSelect.innerHTML = '<option value="">-- Select a patient --</option>';
+    for (const name of names) {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      if (name === current) opt.selected = true;
+      $ccPatientSelect.appendChild(opt);
+    }
+    $ccCompareBtn.disabled = !$ccPatientSelect.value;
+  }
+
+  $ccPatientSelect.addEventListener("change", () => {
+    $ccCompareBtn.disabled = !$ccPatientSelect.value;
+  });
+
+  $ccCompareBtn.addEventListener("click", () => {
+    const patient = $ccPatientSelect.value;
+    if (patient) runCrossCheck(patient);
+  });
+
+  function parseCSVText(text) {
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(",");
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const vals = lines[i].split(",");
+      const row = {};
+      for (let j = 0; j < headers.length; j++) {
+        row[headers[j].trim()] = (vals[j] || "").trim();
+      }
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function extractFinalPower(csvRows) {
+    if (!csvRows.length) return null;
+    const last = csvRows[csvRows.length - 1];
+    return {
+      R_SPH: parseFloat(last.R_SPH) || 0,
+      R_CYL: parseFloat(last.R_CYL) || 0,
+      R_AXIS: parseFloat(last.R_AXIS) || 0,
+      R_ADD: parseFloat(last.R_ADD) || 0,
+      L_SPH: parseFloat(last.L_SPH) || 0,
+      L_CYL: parseFloat(last.L_CYL) || 0,
+      L_AXIS: parseFloat(last.L_AXIS) || 0,
+      L_ADD: parseFloat(last.L_ADD) || 0,
+    };
+  }
+
+  async function runCrossCheck(patientName) {
+    const sessions = allMetadata.filter((m) => m.customer_name === patientName);
+    if (sessions.length === 0) {
+      $ccResultWrap.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No sessions found for this patient.</p></div>';
+      return;
+    }
+
+    $ccResultWrap.innerHTML = '<div class="empty-state"><div class="loading-spinner"></div><p style="margin-top:14px">Downloading CSV data for ' + esc(sessions.length) + ' session(s)...</p></div>';
+
+    const results = [];
+    for (const s of sessions) {
+      try {
+        const { data, error } = await storage.download(s.session_id + ".csv");
+        if (error) { results.push({ meta: s, power: null, error: error.message }); continue; }
+        const text = await data.text();
+        const rows = parseCSVText(text);
+        const power = extractFinalPower(rows);
+        results.push({ meta: s, power });
+      } catch (e) {
+        results.push({ meta: s, power: null, error: e.message });
+      }
+    }
+
+    renderCrossCheck(patientName, results);
+  }
+
+  function renderCrossCheck(patientName, results) {
+    const valid = results.filter((r) => r.power);
+    if (valid.length === 0) {
+      $ccResultWrap.innerHTML = '<div class="empty-state"><div class="icon">⚠</div><p>Could not load CSV data for any session.</p></div>';
+      return;
+    }
+
+    const fields = ["SPH", "CYL", "AXIS", "ADD"];
+
+    function computeDeviation(items, prefix) {
+      const dev = {};
+      for (const f of fields) {
+        const key = prefix + "_" + f;
+        const vals = items.map((r) => r.power[key]);
+        dev[key] = Math.round((Math.max(...vals) - Math.min(...vals)) * 100) / 100;
+      }
+      return dev;
+    }
+
+    const rDev = computeDeviation(valid, "R");
+    const lDev = computeDeviation(valid, "L");
+
+    function devClass(val, field) {
+      if (field === "AXIS") {
+        return val <= 5 ? "deviation-ok" : val <= 10 ? "deviation-warn" : "deviation-bad";
+      }
+      return val <= 0.25 ? "deviation-ok" : val <= 0.5 ? "deviation-warn" : "deviation-bad";
+    }
+
+    let html = '<div class="cc-summary">' +
+      '<div class="cc-summary-card"><div class="val">' + valid.length + '</div><div class="lbl">Optums Compared</div></div>' +
+      '<div class="cc-summary-card"><div class="val">' + esc(patientName) + '</div><div class="lbl">Patient</div></div>' +
+      '</div>';
+
+    function buildEyeTable(prefix, label, dev, titleClass) {
+      let t = '<div class="cc-eye-section"><div class="cc-eye-title ' + titleClass + '">' + label + '</div>' +
+        '<div class="table-card"><table class="cc-table"><thead><tr>' +
+        '<th>Optum Name</th><th>Session ID</th><th>Date</th>' +
+        '<th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th>' +
+        '</tr></thead><tbody>';
+
+      for (const r of valid) {
+        const p = r.power;
+        t += '<tr>' +
+          '<td class="optum-name-cell">' + esc(r.meta.operator_name || "--") + '</td>' +
+          '<td><span class="session-tag">' + esc(r.meta.session_id || "--") + '</span></td>' +
+          '<td>' + esc(getSessionDate(r.meta) || "--") + '</td>';
+        for (const f of fields) {
+          t += '<td>' + p[prefix + "_" + f].toFixed(2) + '</td>';
+        }
+        t += '</tr>';
+      }
+
+      t += '<tr class="cc-deviation-row">' +
+        '<td class="optum-name-cell" colspan="3">Max Deviation</td>';
+      for (const f of fields) {
+        const d = dev[prefix + "_" + f];
+        t += '<td class="' + devClass(d, f) + '">' + d.toFixed(2) + '</td>';
+      }
+      t += '</tr>';
+
+      t += '</tbody></table></div></div>';
+      return t;
+    }
+
+    html += buildEyeTable("R", "Right Eye (OD)", rDev, "right");
+    html += buildEyeTable("L", "Left Eye (OS)", lDev, "left");
+
+    $ccResultWrap.innerHTML = html;
   }
 
   // ── Init ─────────────────────────────────────────────────
