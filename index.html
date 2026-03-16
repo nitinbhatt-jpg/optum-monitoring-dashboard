@@ -666,8 +666,249 @@
     .cc-table .deviation-warn { color: var(--yellow); }
     .cc-table .deviation-bad { color: var(--red); }
 
+    /* ── Check Button (Session Selector) ────────────────────── */
+    .cc-table .cc-check-cell { width: 40px; }
+    .cc-check-btn {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border-light);
+      background: var(--input-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      padding: 0;
+      position: relative;
+    }
+    .cc-check-btn:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .cc-check-btn.checked {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .cc-check-btn.checked::after {
+      content: "";
+      width: 8px; height: 5px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+      position: absolute;
+      top: 5px;
+    }
+    .cc-table tr.cc-selected-row {
+      background: var(--primary-glow);
+    }
+
+    /* ── Prescription Preview Panel ────────────────────────── */
+    .cc-top-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .cc-rx-preview {
+      background: var(--surface);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .cc-rx-preview::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    }
+    .cc-rx-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cc-rx-header .rx-icon {
+      width: 32px; height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .cc-rx-header .rx-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--primary-text);
+    }
+    .cc-rx-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .cc-rx-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cc-rx-meta-item .meta-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-muted);
+    }
+    .cc-rx-meta-item .meta-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .cc-rx-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+    }
+    .cc-rx-table th {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      text-align: center;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+    .cc-rx-table th:first-child { text-align: left; }
+    .cc-rx-table td {
+      padding: 8px 10px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      border-bottom: 1px solid var(--border);
+    }
+    .cc-rx-table td:first-child {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+    .cc-rx-table tr.od-row td:first-child { color: var(--primary-text); }
+    .cc-rx-table tr.os-row td:first-child { color: var(--green); }
+    .cc-rx-empty {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .cc-rx-empty .rx-arrow {
+      font-size: 28px;
+      margin-bottom: 6px;
+      opacity: .5;
+    }
+
+    /* ── Save Prescription ──────────────────────────────────── */
+    .cc-rx-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      gap: 10px;
+    }
+    .cc-rx-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .cc-rx-status .status-icon {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cc-rx-status.saved .status-icon {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+    .cc-rx-status.saved { color: var(--green); }
+    .cc-rx-status.unsaved .status-icon {
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow);
+    }
+    .cc-rx-status.unsaved { color: var(--yellow); }
+    .cc-rx-status.changed .status-icon {
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow);
+    }
+    .cc-rx-status.changed { color: var(--yellow); }
+
+    .btn-save-rx {
+      padding: 8px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: .2px;
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(52,211,153,.3);
+    }
+    .btn-save-rx:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 16px rgba(52,211,153,.4);
+      transform: translateY(-1px);
+    }
+    .btn-save-rx:active { transform: translateY(0); }
+    .btn-save-rx:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+    .btn-save-rx.saving {
+      opacity: .7;
+      cursor: wait;
+    }
+    .btn-change-rx {
+      padding: 6px 16px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all var(--transition);
+      background: transparent;
+      color: var(--text-secondary);
+    }
+    .btn-change-rx:hover {
+      border-color: var(--primary);
+      color: var(--primary-text);
+      background: var(--primary-glow);
+    }
+
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: 1fr 1fr; }
+      .cc-top-row { grid-template-columns: 1fr; }
       .navbar { padding: 12px 16px; }
       .config-panel { margin: 12px 16px 0; padding: 12px 14px; }
       .config-panel input.url-input,
@@ -1230,6 +1471,42 @@
     };
   }
 
+  function rxFileName(patientName) {
+    return patientName.replace(/[^a-zA-Z0-9_-]/g, "_") + "_final_rx.json";
+  }
+
+  async function loadSavedPrescription(patientName) {
+    if (!storage) return null;
+    try {
+      const { data, error } = await storage.download(rxFileName(patientName));
+      if (error) return null;
+      const text = await data.text();
+      return JSON.parse(text);
+    } catch (e) { return null; }
+  }
+
+  async function savePrescription(patientName, sessionId) {
+    if (!storage || !ccLastResults) throw new Error("Not connected");
+    const selected = ccLastResults.find((r) => r.meta.session_id === sessionId);
+    if (!selected) throw new Error("Session not found");
+
+    const rx = {
+      patient_name: patientName,
+      session_id: sessionId,
+      operator_name: selected.meta.operator_name || "",
+      date: getSessionDate(selected.meta) || "",
+      saved_at: new Date().toISOString(),
+      power: selected.power,
+    };
+
+    const blob = new Blob([JSON.stringify(rx, null, 2)], { type: "application/json" });
+    const file = new File([blob], rxFileName(patientName), { type: "application/json" });
+
+    const { error } = await storage.upload(rxFileName(patientName), file, { upsert: true });
+    if (error) throw new Error(error.message);
+    return rx;
+  }
+
   async function runCrossCheck(patientName) {
     const sessions = allMetadata.filter((m) => m.customer_name === patientName);
     if (sessions.length === 0) {
@@ -1253,8 +1530,22 @@
       }
     }
 
+    const savedRx = await loadSavedPrescription(patientName);
+    if (savedRx && savedRx.session_id) {
+      ccSelectedSession = savedRx.session_id;
+      ccSavedSession = savedRx.session_id;
+    } else {
+      ccSelectedSession = null;
+      ccSavedSession = null;
+    }
+
     renderCrossCheck(patientName, results);
   }
+
+  let ccSelectedSession = null;
+  let ccSavedSession = null;
+  let ccLastResults = null;
+  let ccLastPatient = null;
 
   function renderCrossCheck(patientName, results) {
     const valid = results.filter((r) => r.power);
@@ -1262,6 +1553,9 @@
       $ccResultWrap.innerHTML = '<div class="empty-state"><div class="icon">⚠</div><p>Could not load CSV data for any session.</p></div>';
       return;
     }
+
+    ccLastResults = valid;
+    ccLastPatient = patientName;
 
     const fields = ["SPH", "CYL", "AXIS", "ADD"];
 
@@ -1285,23 +1579,30 @@
       return val <= 0.25 ? "deviation-ok" : val <= 0.5 ? "deviation-warn" : "deviation-bad";
     }
 
-    let html = '<div class="cc-summary">' +
-      '<div class="cc-summary-card"><div class="val">' + valid.length + '</div><div class="lbl">Optums Compared</div></div>' +
-      '<div class="cc-summary-card"><div class="val">' + esc(patientName) + '</div><div class="lbl">Patient</div></div>' +
+    let html = '<div class="cc-top-row">' +
+      '<div class="cc-summary" style="margin-bottom:0">' +
+        '<div class="cc-summary-card"><div class="val">' + valid.length + '</div><div class="lbl">Optums Compared</div></div>' +
+        '<div class="cc-summary-card"><div class="val">' + esc(patientName) + '</div><div class="lbl">Patient</div></div>' +
+      '</div>' +
+      '<div class="cc-rx-preview" id="ccRxPreview">' + buildRxPreview(patientName) + '</div>' +
       '</div>';
 
     function buildEyeTable(prefix, label, dev, titleClass) {
       let t = '<div class="cc-eye-section"><div class="cc-eye-title ' + titleClass + '">' + label + '</div>' +
         '<div class="table-card"><table class="cc-table"><thead><tr>' +
+        '<th class="cc-check-cell"></th>' +
         '<th>Optum Name</th><th>Session ID</th><th>Date</th>' +
         '<th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th>' +
         '</tr></thead><tbody>';
 
       for (const r of valid) {
         const p = r.power;
-        t += '<tr>' +
+        const sid = r.meta.session_id || "";
+        const isChecked = ccSelectedSession === sid;
+        t += '<tr class="' + (isChecked ? 'cc-selected-row' : '') + '" data-session-id="' + esc(sid) + '">' +
+          '<td class="cc-check-cell"><button class="cc-check-btn' + (isChecked ? ' checked' : '') + '" data-sid="' + esc(sid) + '" title="Select as final prescription"></button></td>' +
           '<td class="optum-name-cell">' + esc(r.meta.operator_name || "--") + '</td>' +
-          '<td><span class="session-tag">' + esc(r.meta.session_id || "--") + '</span></td>' +
+          '<td><span class="session-tag">' + esc(sid || "--") + '</span></td>' +
           '<td>' + esc(getSessionDate(r.meta) || "--") + '</td>';
         for (const f of fields) {
           t += '<td>' + p[prefix + "_" + f].toFixed(2) + '</td>';
@@ -1310,6 +1611,7 @@
       }
 
       t += '<tr class="cc-deviation-row">' +
+        '<td></td>' +
         '<td class="optum-name-cell" colspan="3">Max Deviation</td>';
       for (const f of fields) {
         const d = dev[prefix + "_" + f];
@@ -1325,6 +1627,144 @@
     html += buildEyeTable("L", "Left Eye (OS)", lDev, "left");
 
     $ccResultWrap.innerHTML = html;
+    bindCheckButtons();
+  }
+
+  function buildRxPreview(patientName) {
+    if (!ccSelectedSession || !ccLastResults) {
+      let emptyHtml = '<div class="cc-rx-header">' +
+        '<div class="rx-icon">Rx</div>' +
+        '<div class="rx-title">Preview Prescription</div>' +
+      '</div>';
+      if (ccSavedSession) {
+        emptyHtml += '<div class="cc-rx-empty">' +
+          '<p>Previously saved prescription exists for session<br><strong>' + esc(ccSavedSession) + '</strong></p>' +
+        '</div>';
+      } else {
+        emptyHtml += '<div class="cc-rx-empty">' +
+          '<div class="rx-arrow">&#x2190;</div>' +
+          '<p>Select a session using the check button to preview the final prescription</p>' +
+        '</div>';
+      }
+      return emptyHtml;
+    }
+
+    const selected = ccLastResults.find((r) => r.meta.session_id === ccSelectedSession);
+    if (!selected) {
+      return '<div class="cc-rx-header">' +
+        '<div class="rx-icon">Rx</div>' +
+        '<div class="rx-title">Preview Prescription</div>' +
+      '</div>' +
+      '<div class="cc-rx-empty"><p>Session not found</p></div>';
+    }
+
+    const p = selected.power;
+    const date = getSessionDate(selected.meta) || "--";
+
+    const isSaved = ccSavedSession === ccSelectedSession;
+    const isChanged = ccSavedSession && ccSavedSession !== ccSelectedSession;
+
+    let statusHtml = '';
+    if (isSaved) {
+      statusHtml = '<div class="cc-rx-status saved"><div class="status-icon"></div>Saved</div>';
+    } else if (isChanged) {
+      statusHtml = '<div class="cc-rx-status changed"><div class="status-icon"></div>Unsaved change</div>';
+    } else {
+      statusHtml = '<div class="cc-rx-status unsaved"><div class="status-icon"></div>Not saved</div>';
+    }
+
+    let footerBtns = '';
+    if (!isSaved) {
+      footerBtns = '<button class="btn-save-rx" id="btnSaveRx">Save Final Prescription</button>';
+    } else {
+      footerBtns = '<button class="btn-change-rx" id="btnChangeRx">Change Prescription</button>';
+    }
+
+    return '<div class="cc-rx-header">' +
+      '<div class="rx-icon">Rx</div>' +
+      '<div class="rx-title">Preview Prescription</div>' +
+    '</div>' +
+    '<div class="cc-rx-meta">' +
+      '<div class="cc-rx-meta-item"><span class="meta-label">Patient</span><span class="meta-value">' + esc(patientName) + '</span></div>' +
+      '<div class="cc-rx-meta-item"><span class="meta-label">Date</span><span class="meta-value">' + esc(date) + '</span></div>' +
+      '<div class="cc-rx-meta-item"><span class="meta-label">Optum</span><span class="meta-value">' + esc(selected.meta.operator_name || "--") + '</span></div>' +
+    '</div>' +
+    '<table class="cc-rx-table">' +
+      '<thead><tr><th>Eye</th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th></tr></thead>' +
+      '<tbody>' +
+        '<tr class="od-row"><td>OD (Right)</td>' +
+          '<td>' + p.R_SPH.toFixed(2) + '</td>' +
+          '<td>' + p.R_CYL.toFixed(2) + '</td>' +
+          '<td>' + p.R_AXIS.toFixed(2) + '</td>' +
+          '<td>' + p.R_ADD.toFixed(2) + '</td>' +
+        '</tr>' +
+        '<tr class="os-row"><td>OS (Left)</td>' +
+          '<td>' + p.L_SPH.toFixed(2) + '</td>' +
+          '<td>' + p.L_CYL.toFixed(2) + '</td>' +
+          '<td>' + p.L_AXIS.toFixed(2) + '</td>' +
+          '<td>' + p.L_ADD.toFixed(2) + '</td>' +
+        '</tr>' +
+      '</tbody>' +
+    '</table>' +
+    '<div class="cc-rx-footer">' + statusHtml + footerBtns + '</div>';
+  }
+
+  function refreshPreviewAndButtons() {
+    const $preview = $id("ccRxPreview");
+    if ($preview) {
+      $preview.innerHTML = buildRxPreview(ccLastPatient);
+      bindRxButtons();
+    }
+  }
+
+  function bindCheckButtons() {
+    $ccResultWrap.querySelectorAll(".cc-check-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const sid = this.dataset.sid;
+        ccSelectedSession = (ccSelectedSession === sid) ? null : sid;
+
+        $ccResultWrap.querySelectorAll(".cc-check-btn").forEach((b) => {
+          b.classList.toggle("checked", b.dataset.sid === ccSelectedSession);
+        });
+        $ccResultWrap.querySelectorAll("tr[data-session-id]").forEach((row) => {
+          row.classList.toggle("cc-selected-row", row.dataset.sessionId === ccSelectedSession);
+        });
+
+        refreshPreviewAndButtons();
+      });
+    });
+    bindRxButtons();
+  }
+
+  function bindRxButtons() {
+    const $saveBtn = $id("btnSaveRx");
+    if ($saveBtn) {
+      $saveBtn.addEventListener("click", async function () {
+        if (!ccSelectedSession || !ccLastPatient) return;
+        this.disabled = true;
+        this.classList.add("saving");
+        this.textContent = "Saving...";
+        try {
+          await savePrescription(ccLastPatient, ccSelectedSession);
+          ccSavedSession = ccSelectedSession;
+          showToast("Final prescription saved successfully");
+          refreshPreviewAndButtons();
+        } catch (e) {
+          showToast("Save failed: " + e.message);
+          this.disabled = false;
+          this.classList.remove("saving");
+          this.textContent = "Save Final Prescription";
+        }
+      });
+    }
+
+    const $changeBtn = $id("btnChangeRx");
+    if ($changeBtn) {
+      $changeBtn.addEventListener("click", function () {
+        showToast("Select a different session to change the prescription");
+      });
+    }
   }
 
   // ── Init ─────────────────────────────────────────────────
