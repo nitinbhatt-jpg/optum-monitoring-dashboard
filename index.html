@@ -1110,6 +1110,16 @@
     catch (e) { return null; }
   }
 
+  /** Exclude sessions that used a test-label phoropter from counts. */
+  function isTestPhoropter(meta) {
+    const id = (meta.phoropter_id || "").trim().toLowerCase();
+    if (!id) return false;
+    if (id === "test") return true;
+    if (id === "phoropter-1") return true;
+    if (id.includes("test")) return true;
+    return false;
+  }
+
   function esc(str) {
     if (str == null) return "";
     const el = document.createElement("span");
@@ -1247,13 +1257,16 @@
     if (!fromDate || !toDate) return;
     expandedOptum = null;
 
-    const todaySessions = allMetadata.filter((m) => {
+    const inRange = (m) => {
       const d = getSessionDate(m);
       return d && d >= fromDate && d <= toDate;
-    });
+    };
 
+    const todaySessions = allMetadata.filter((m) => inRange(m) && !isTestPhoropter(m));
+
+    const allMetadataNonTest = allMetadata.filter((m) => !isTestPhoropter(m));
     const allTimeByOptum = {};
-    for (const m of allMetadata) {
+    for (const m of allMetadataNonTest) {
       const name = m.operator_name || "(Unknown)";
       allTimeByOptum[name] = (allTimeByOptum[name] || 0) + 1;
     }
@@ -1266,10 +1279,10 @@
     }
 
     $sessionsToday.textContent = todaySessions.length;
-    $sessionsAllTime.textContent = allMetadata.length;
+    $sessionsAllTime.textContent = allMetadataNonTest.length;
     $activeOptums.textContent = Object.keys(todayByOptum).length;
 
-    if (todaySessions.length === 0 && allMetadata.length === 0) {
+    if (todaySessions.length === 0 && allMetadataNonTest.length === 0) {
       $tableWrap.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No sessions found in the bucket.</p></div>';
       return;
     }
