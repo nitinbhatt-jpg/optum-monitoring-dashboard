@@ -699,6 +699,14 @@
       position: absolute;
       top: 5px;
     }
+    .cc-table .cc-csv-cell {
+      text-align: left;
+      white-space: nowrap;
+    }
+    .cc-table .cc-csv-cell .btn-download {
+      padding: 3px 10px;
+      font-size: 11px;
+    }
     .cc-table tr.cc-selected-row {
       background: var(--primary-glow);
     }
@@ -1604,7 +1612,7 @@
       let t = '<div class="cc-eye-section"><div class="cc-eye-title ' + titleClass + '">' + label + '</div>' +
         '<div class="table-card"><table class="cc-table"><thead><tr>' +
         '<th class="cc-check-cell"></th>' +
-        '<th>Optum Name</th><th>Session ID</th><th>Date</th>' +
+        '<th>Optum Name</th><th>CSV Log</th><th>Session ID</th><th>Date</th>' +
         '<th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th>' +
         '</tr></thead><tbody>';
 
@@ -1615,6 +1623,9 @@
         t += '<tr class="' + (isChecked ? 'cc-selected-row' : '') + '" data-session-id="' + esc(sid) + '">' +
           '<td class="cc-check-cell"><button class="cc-check-btn' + (isChecked ? ' checked' : '') + '" data-sid="' + esc(sid) + '" title="Select as final prescription"></button></td>' +
           '<td class="optum-name-cell">' + esc(r.meta.operator_name || "--") + '</td>' +
+          '<td class="cc-csv-cell">' +
+            '<button type="button" class="btn-download cc-btn-dl-csv" data-session="' + esc(sid) + '" title="Download full CSV log for this eye test">CSV</button>' +
+          '</td>' +
           '<td><span class="session-tag">' + esc(sid || "--") + '</span></td>' +
           '<td>' + esc(getSessionDate(r.meta) || "--") + '</td>';
         for (const f of fields) {
@@ -1625,7 +1636,7 @@
 
       t += '<tr class="cc-deviation-row">' +
         '<td></td>' +
-        '<td class="optum-name-cell" colspan="3">Max Deviation</td>';
+        '<td class="optum-name-cell" colspan="4">Max Deviation</td>';
       for (const f of fields) {
         const d = dev[prefix + "_" + f];
         t += '<td class="' + devClass(d, f) + '">' + d.toFixed(2) + '</td>';
@@ -1745,6 +1756,13 @@
         });
 
         refreshPreviewAndButtons();
+      });
+    });
+    $ccResultWrap.querySelectorAll(".cc-btn-dl-csv").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const sid = this.dataset.session;
+        if (sid) downloadFile(sid + ".csv", sid + ".csv", "text/csv");
       });
     });
     bindRxButtons();
